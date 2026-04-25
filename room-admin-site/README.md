@@ -12,9 +12,10 @@ This folder contains a static admin page for managing room-based mod packs in Su
 
 ## Files
 
-- `index.html`: the page markup
-- `app.css`: visual styling
-- `app.js`: Supabase calls, uploads, and manifest editing logic
+- `app.css`: visual styling for the room manager
+- `app.js`: room-manager client logic
+
+This public repo intentionally does not need to include a live, hardwired `index.html` that points at your personal Supabase project. Keep the deployed HTML private or generate it per environment before publishing.
 
 ## How to host it
 
@@ -32,13 +33,8 @@ If you test locally, use a small static server instead of opening the file direc
 1. Run the SQL in [room_schema.sql](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/room_schema.sql)
 2. Create a public storage bucket, for example `victor-mods`
 3. Host this folder
-4. Open the page and paste:
-   - your Supabase project URL
-   - your anon key
-   - your bucket name
+4. Build or deploy your room-manager HTML with the correct project-specific values for that environment
 
 ## Current tradeoff
 
-This first version uploads directly from the browser to Supabase Storage. That keeps the setup simple, but it also means your bucket policies must allow uploads from the anon client.
-
-That is okay for a private prototype with friends. If you want this to be safer for wider use, the next step is moving uploads behind a password-checked Edge Function or another small backend.
+This project now expects the safer flow where uploads and room actions go through password-checked Edge Functions instead of a raw browser-to-bucket prototype.

@@ -60,7 +60,7 @@ The host website is a single self-contained HTML file:
 
 - [room-admin-site/index.html](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/room-admin-site/index.html)
 
-It is already wired for your Supabase project and no longer exposes editable project URL or anon key fields in the UI.
+For the public repo, you should treat the deployed room-manager HTML as an environment-specific file. Do not commit a copy that is hardwired to your live project unless you intend to make that backend public.
 
 Hosts can:
 
@@ -90,12 +90,13 @@ Good last checks before you push to GitHub:
 - confirm the website file is the polished version in [room-admin-site/index.html](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/room-admin-site/index.html)
 - confirm the plugin still opens with `F7`
 - confirm the latest room-code flow works in game
-- decide whether you want to keep your current public Supabase project URL and anon key hardcoded in the repo
+- keep project-specific Supabase URLs and anon keys out of the public source unless you intentionally want others to target that backend
 - avoid committing private signing keys or service-role secrets
 
 Important note:
 
-- the Supabase anon key is designed to be public, but your service-role key, room session secret, and manifest signing private key should never be committed
+- the Supabase anon key is designed to be public, but it still points at a real backend, so many projects prefer not to bake it directly into public source
+- your service-role key, room session secret, and manifest signing private key should never be committed
 
 ## Development
 

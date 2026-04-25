@@ -5,8 +5,8 @@ namespace AmongUsPlugin;
 [BepInEx.BepInPlugin(PluginInfo.Guid, PluginInfo.Name, PluginInfo.Version)]
 public sealed class StarterPlugin : BepInEx.Unity.IL2CPP.BasePlugin
 {
-    internal const string DefaultSupabaseUrl = "https://xziwdtzegzasllwnadih.supabase.co";
-    internal const string DefaultSupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6aXdkdHplZ3phc2xsd25hZGloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTkyNTYsImV4cCI6MjA5MjE5NTI1Nn0.CRdXnp8f_MIEjD4QXZtr8NTUTCiqtcWCSsnHEEHDJJs";
+    internal const string DefaultSupabaseUrl = "";
+    internal const string DefaultSupabaseAnonKey = "";
     internal const string DefaultManifestSigningPublicKeyPem = """
                                                                   -----BEGIN PUBLIC KEY-----
                                                                   MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzR9LkNcG6pfwzvgKsImv
