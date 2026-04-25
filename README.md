@@ -18,14 +18,18 @@ It is designed to make DLL-based mod packs easier to manage without constantly d
 1. Download the latest release asset.
 2. Place Victor-Launcher-0.1.2.dll into:
 
-`<Among Us folder>/BepInEx/plugins/`
+<Among Us folder>/BepInEx/plugins/, and the mod does the rest
 
 3. Launch Among Us
 4. Press F7 to open Victor Launcher
 
 ## How It Works
 
-Victor Launcher keeps track of:
+Just press Pick DLL, and choose the plugin to install. The selected plugin will be queued.
+Once installed, changes will take effect on the next restart. 
+After a change affecting the mod is made, it will prompt you to close the game.
+
+Victor Launcher keeps track of
 
 - active plugins in `BepInEx/plugins`
 - disabled plugins in `BepInEx/plugins-disabled`
