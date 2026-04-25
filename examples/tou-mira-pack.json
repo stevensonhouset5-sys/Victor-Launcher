@@ -1,0 +1,18 @@
+{
+  "id": "town-of-us-mira",
+  "name": "Town Of Us Mira",
+  "version": "1.0.0",
+  "gameVersion": "2026.x",
+  "loader": "BepInEx",
+  "dependencies": [],
+  "conflicts": [
+    "other-role-overhaul-pack"
+  ],
+  "files": [
+    {
+      "path": "BepInEx/plugins/TownOfUsMira.dll",
+      "url": "https://github.com/example/town-of-us-mira/releases/download/v1.0.0/TownOfUsMira.dll",
+      "sha256": "replace-with-real-sha256"
+    }
+  ]
+}
