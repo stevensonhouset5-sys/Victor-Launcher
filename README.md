@@ -1,12 +1,12 @@
 # Victor Launcher
 
-Victor Launcher is an in-game mod manager for `Among Us` built on BepInEx.
+Victor Launcher is an in-game mod manager for Among Us built on BepInEx.
 
 It is designed to make DLL-based mod packs easier to manage without constantly dragging files in and out of the game folder by hand.
 
 ## Features
 
-- open the launcher in game with `F7`
+- open the launcher in game with F7
 - install DLL mods from a simple in-game menu
 - view installed, disabled, and queued mods
 - enable or disable mods without manually sorting files
@@ -16,12 +16,12 @@ It is designed to make DLL-based mod packs easier to manage without constantly d
 ## Installation
 
 1. Download the latest release asset.
-2. Place `Victor-Launcher-0.1.2.dll` into:
+2. Place Victor-Launcher-0.1.2.dll into:
 
 `<Among Us folder>/BepInEx/plugins/`
 
-3. Launch `Among Us`
-4. Press `F7` to open Victor Launcher
+3. Launch Among Us
+4. Press F7 to open Victor Launcher
 
 ## How It Works
 
