@@ -1,117 +1,63 @@
 # Victor Launcher
 
-Victor Launcher is an in-game BepInEx plugin for `Among Us` that helps players manage DLL-based mod packs without manually dragging files around every time.
+Victor Launcher is an in-game mod manager for `Among Us` built on BepInEx.
 
-It includes:
+It is designed to make DLL-based mod packs easier to manage without constantly dragging files in and out of the game folder by hand.
 
-- an in-game `F7` launcher menu
-- DLL install, enable, disable, and delete controls
-- room-code downloads for shared mod packs
-- folder-based pack grouping inside the menu
-- a matching browser-based room manager for hosts
+## Features
 
-## What This Repo Contains
+- open the launcher in game with `F7`
+- install DLL mods from a simple in-game menu
+- view installed, disabled, and queued mods
+- enable or disable mods without manually sorting files
+- manage grouped mod folders from one place
+- download shared packs by room code and queue them for install
 
-- [AmongUsPlugin](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin): the in-game Victor Launcher plugin
-- [room-admin-site/index.html](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/room-admin-site/index.html): the single-file room manager website
-- [supabase](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase): SQL, storage policy, and Edge Function files for the backend
+## Installation
 
-## Current Plugin Build
-
-The current plugin output is:
-
-- [Victor-Launcher-0.1.2.dll](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/bin/Debug/net6.0/Victor-Launcher-0.1.2.dll)
-
-Victor Launcher shows up in BepInEx as:
-
-- `Victor Launcher`
-
-## Installing The Plugin
-
-1. Build the project or use the latest DLL from the build output.
-2. Copy the DLL into your game install here:
+1. Download the latest release asset.
+2. Place `Victor-Launcher-0.1.2.dll` into:
 
 `<Among Us folder>/BepInEx/plugins/`
 
-3. Launch the game.
-4. Press `F7` to open Victor Launcher.
+3. Launch `Among Us`
+4. Press `F7` to open Victor Launcher
 
-Victor Launcher manages:
+## How It Works
 
-- enabled plugins from `BepInEx/plugins`
-- disabled plugins from `BepInEx/plugins-disabled`
-- queued imports from `BepInEx/mod-imports`
+Victor Launcher keeps track of:
 
-## Room-Code Downloads
+- active plugins in `BepInEx/plugins`
+- disabled plugins in `BepInEx/plugins-disabled`
+- queued imports in `BepInEx/mod-imports`
 
-Hosts can create a room, upload DLLs, save a room pack, and share the room code.
+Changes that affect loaded mods still require a game restart to fully take effect.
 
-Players then:
+## Shared Packs
 
-1. open Victor Launcher in game
+Victor Launcher supports room-code pack downloads.
+
+If a host shares a valid room code, players can:
+
+1. open Victor Launcher
 2. enter the room code
-3. download the room pack into the queue
+3. download the pack into the queue
 4. install the queued DLLs
 5. restart the game when prompted
 
-## Website
+## Notes
 
-The host website is a single self-contained HTML file:
+- Victor Launcher is meant for BepInEx-based DLL workflows
+- compatibility between large gameplay-overhaul mods still depends on the mods themselves
+- this project is intended for mod management convenience, not for bypassing game restrictions or trust checks
 
-- [room-admin-site/index.html](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/room-admin-site/index.html)
+## Build
 
-For the public repo, you should treat the deployed room-manager HTML as an environment-specific file. Do not commit a copy that is hardwired to your live project unless you intend to make that backend public.
-
-Hosts can:
-
-- create a room
-- open an existing room
-- upload DLLs
-- remove DLLs
-- save the room pack
-- copy the room code
-
-## Supabase Backend
-
-Supabase setup files live here:
-
-- [room_schema.sql](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/room_schema.sql)
-- [storage_policies.sql](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/storage_policies.sql)
-- [DEPLOYMENT.md](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/DEPLOYMENT.md)
-
-Edge Functions live under:
-
-- [/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/functions](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/supabase/functions)
-
-## Before Publishing
-
-Good last checks before you push to GitHub:
-
-- confirm the website file is the polished version in [room-admin-site/index.html](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/room-admin-site/index.html)
-- confirm the plugin still opens with `F7`
-- confirm the latest room-code flow works in game
-- keep project-specific Supabase URLs and anon keys out of the public source unless you intentionally want others to target that backend
-- avoid committing private signing keys or service-role secrets
-
-Important note:
-
-- the Supabase anon key is designed to be public, but it still points at a real backend, so many projects prefer not to bake it directly into public source
-- your service-role key, room session secret, and manifest signing private key should never be committed
-
-## Development
-
-Open:
+If you want to build from source, open:
 
 - [AmongUsModStarter.sln](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsModStarter.sln)
 
-Main plugin files:
-
-- [StarterPlugin.cs](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/StarterPlugin.cs)
-- [ModManagerBehaviour.cs](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/ModManagerBehaviour.cs)
-- [SupabasePackService.cs](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/SupabasePackService.cs)
-- [ModFileService.cs](/Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/ModFileService.cs)
-
-Build with:
+Or run:
 
 ```bash
 dotnet build /Users/tatestevenson-house/Documents/Codex/2026-04-19-are-you-able-to-code-among/AmongUsPlugin/AmongUsPlugin.csproj
