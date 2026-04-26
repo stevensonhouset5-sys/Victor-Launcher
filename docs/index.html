@@ -428,16 +428,9 @@
     <section class="hero">
       <div class="card">
         <p class="eyebrow">Victor Launcher</p>
-        <h1>Room-based mod pack management for Among Us friend groups.</h1>
-        <p class="hero-copy">Create a room, upload DLLs, save the pack, and share the room code. Players only need to enter that code in Victor Launcher in game. The storage bucket stays private and the game receives signed download links instead of raw file paths.</p>
+        <h1>Build and share room-based mod packs for Among Us.</h1>
+        <p class="hero-copy">Create a room, upload DLLs, save the pack, and share the room code. Players only need to enter that code in Victor Launcher in game to queue the right mods.</p>
       </div>
-      <div class="stat">
-        <div class="eyebrow">Publish Flow</div>
-        <div class="stat-value">Create room -> Upload DLLs -> Save pack -> Share room code</div>
-        <div class="stat-copy">This page is already pointed at your Victor Launcher backend, so hosts can start managing rooms right away without touching Supabase settings.</div>
-      </div>
-    </section>
-
     <main class="grid">
       <section class="panel">
         <div class="panel-head">
@@ -491,13 +484,13 @@
         <div class="panel-head">
           <div>
             <h2>How It Works</h2>
-            <p>Quick reminders for hosts.</p>
+            <p>Everything needed to manage a room pack in one place.</p>
           </div>
         </div>
         <div class="helper-list">
-          <div class="helper-item">Upload only the DLLs you want players to queue in game. Victor Launcher will stage them for install after the player enters your room code.</div>
-          <div class="helper-item">Room changes are drafts until you press <strong>Save Room Pack</strong>. Uploading alone does not publish the new pack version.</div>
-          <div class="helper-item">If you remove a DLL here, it is removed from the room draft and deleted from room storage too.</div>
+          <div class="helper-item">Upload the DLLs you want players to receive. Victor Launcher will queue them in game after a player enters the room code.</div>
+          <div class="helper-item">Changes are not live until <strong>Save Room Pack</strong> is pressed. Uploading files alone does not update the room pack.</div>
+          <div class="helper-item">Removing a DLL here removes it from the room pack and deletes it from the room's file list.</div>
         </div>
       </section>
 
@@ -549,7 +542,7 @@
                   <strong id="manifest-version-pill">1</strong>
                 </div>
                 <div class="status-row">
-                  <span>Publish State</span>
+                  <span>Download Access</span>
                   <strong id="publish-state">Enabled</strong>
                 </div>
               </div>
@@ -560,7 +553,7 @@
             <div class="panel-head">
               <div>
                 <h3>Upload DLLs</h3>
-                <p>These files will appear in Victor Launcher after players enter your room code in game.</p>
+                <p>These files will be queued in Victor Launcher after players enter your room code.</p>
               </div>
             </div>
             <label class="file-picker">
@@ -716,7 +709,7 @@
 
         el.dllFiles.value = "";
         renderFiles();
-        showBanner("DLLs uploaded. Save the room pack to publish this version.", "success");
+        showBanner("DLLs uploaded. Save the room pack to make these changes live.", "success");
       } catch (error) {
         showBanner(error.message, "error");
       }
@@ -822,7 +815,7 @@
       if (!active) return;
 
       el.dashboardTitle.textContent = state.roomName || state.roomCode;
-      el.dashboardSubtitle.textContent = `Share room code ${state.roomCode} with players. Changes here stay attached to this room owner session.`;
+      el.dashboardSubtitle.textContent = `Share room code ${state.roomCode} with players to let them queue this room pack in Victor Launcher.`;
       el.packName.value = state.manifest.name || state.roomName || "";
       el.packVersion.value = state.manifest.version || "1.0.0";
       el.gameVersion.value = state.manifest.gameVersion || "";
