@@ -16,7 +16,7 @@ It is designed to make DLL-based mod packs easier to manage without constantly d
 ## Installation
 
 1. Download the latest release asset.
-2. Place Victor-Launcher-0.1.2.dll into:
+2. Place the latest version of Victor Launcher into:
 
 <Among Us folder>/BepInEx/plugins/, and the mod does the rest
 
