@@ -2,7 +2,7 @@
 
 Victor Launcher is an in-game mod manager for Among Us built on BepInEx.
 
-It is designed to make DLL-based mod packs easier to manage without constantly dragging files in and out of the game folder by hand.
+It is designed to make DLL-based mod packs easier to manage without constantly dragging files in and out of the game folder by hand, and add effortless mod sharing through codes.
 
 ## Features
 
@@ -40,6 +40,13 @@ Changes that affect loaded mods still require a game restart to fully take effec
 ## Shared Packs
 
 Victor Launcher supports room-code pack downloads.
+
+To make the room:
+1. visit the website at https://ateasvictor.github.io/Victor-Launcher/
+2. create a room with a name, room code, and password (don't forget this)
+3. upload your DLL's to the website (this creates a draft)
+4. press 'save room pack' to upload the changes to the cloud
+5. share the room code with your players 
 
 If a host shares a valid room code, players can:
 
