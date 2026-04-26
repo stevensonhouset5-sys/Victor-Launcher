@@ -58,6 +58,7 @@ If a host shares a valid room code, players can:
 
 ## Notes
 
-- Victor Launcher is meant for BepInEx-based DLL workflows
+- Victor Launcher is meant for BepInEx-based DLLs
+- Error messages and mod status messages are found near the bottom of the menu next to Ship Status
 - compatibility between large gameplay-overhaul mods still depends on the mods themselves
 - this project is intended for mod management convenience, not for bypassing game restrictions or trust checks
