@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Victor Launcher Room Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111d;
+      --bg-soft: #0c1827;
+      --panel: rgba(10, 18, 30, 0.84);
+      --panel-strong: rgba(12, 22, 37, 0.96);
+      --panel-soft: rgba(17, 28, 43, 0.9);
+      --line: rgba(173, 212, 255, 0.12);
+      --line-strong: rgba(173, 212, 255, 0.22);
+      --text: #eef7ff;
+      --muted: #8ea7c7;
+      --accent: #6ad2ff;
+      --accent-strong: #2d82ff;
+      --success: #4fd49d;
+      --danger: #ff7f92;
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(62, 150, 255, 0.2), transparent 28%),
+        radial-gradient(circle at top right, rgba(85, 227, 174, 0.12), transparent 24%),
+        linear-gradient(180deg, #08111d 0%, #050910 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 80%);
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card,
+    .panel,
+    .stat {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .card,
+    .stat {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font: 500 12px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #a9ddff;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 12ch;
+      font-size: clamp(2.3rem, 4vw, 4.7rem);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy {
+      margin-top: 16px;
+      max-width: 62ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .stat {
+      display: grid;
+      gap: 16px;
+      background: linear-gradient(180deg, rgba(18, 30, 47, 0.94), rgba(9, 15, 24, 0.96));
+    }
+
+    .stat-value {
+      font-size: 1.45rem;
+      line-height: 1.18;
+    }
+
+    .stat-copy {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-head p {
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col,
+    .meta-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .meta-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 0.96rem;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, rgba(17, 28, 43, 0.96), rgba(9, 14, 23, 0.98));
+      color: var(--text);
+      font: inherit;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    input:focus {
+      border-color: rgba(106, 210, 255, 0.7);
+      box-shadow: 0 0 0 4px rgba(106, 210, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .subpanel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--panel-soft);
+      padding: 18px;
+    }
+
+    .status-card {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-height: 100%;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+    }
+
+    .status-row strong {
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 13px 18px;
+      cursor: pointer;
+      color: white;
+      font: 700 0.95rem/1 "Space Grotesk", sans-serif;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, opacity 140ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 14px 28px rgba(45, 130, 255, 0.24);
+    }
+
+    .success {
+      background: linear-gradient(180deg, #64e9b5, #1ea26f);
+      box-shadow: 0 14px 28px rgba(30, 162, 111, 0.22);
+    }
+
+    .ghost {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--line-strong);
+    }
+
+    .danger {
+      background: linear-gradient(180deg, #ff9dad, #d64058);
+      box-shadow: 0 14px 28px rgba(214, 64, 88, 0.22);
+    }
+
+    .helper-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .helper-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .file-picker {
+      display: grid;
+      gap: 10px;
+      border: 1px dashed rgba(173, 212, 255, 0.28);
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, rgba(18, 29, 44, 0.88), rgba(10, 15, 24, 0.88));
+      padding: 16px;
+    }
+
+    .file-picker span {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .toggle input {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      accent-color: var(--accent-strong);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+    }
+
+    .pill strong {
+      color: var(--text);
+    }
+
+    .room-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .room-file {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(20, 31, 48, 0.94), rgba(10, 16, 27, 0.94));
+    }
+
+    .room-file h3 {
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.82rem;
+      color: #b0dcff;
+      word-break: break-all;
+    }
+
+    .code {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 110px;
+      border-radius: 20px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+    }
+
+    .banner {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      max-width: min(480px, calc(100% - 40px));
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel-strong);
+      box-shadow: var(--shadow);
+      z-index: 20;
+    }
+
+    .banner.success {
+      color: #dcfff1;
+      border-color: rgba(79, 212, 157, 0.28);
+    }
+
+    .banner.error {
+      color: #ffe3e7;
+      border-color: rgba(255, 127, 146, 0.28);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .grid,
+      .two-col,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .room-file {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="card">
+        <p class="eyebrow">Victor Launcher</p>
+        <h1>Room-based mod pack management for Among Us friend groups.</h1>
+        <p class="hero-copy">Create a room, upload DLLs, save the pack, and share the room code. Players only need to enter that code in Victor Launcher in game. The storage bucket stays private and the game receives signed download links instead of raw file paths.</p>
+      </div>
+      <div class="stat">
+        <div class="eyebrow">Publish Flow</div>
+        <div class="stat-value">Create room -> Upload DLLs -> Save pack -> Share room code</div>
+        <div class="stat-copy">This page is already pointed at your Victor Launcher backend, so hosts can start managing rooms right away without touching Supabase settings.</div>
+      </div>
+    </section>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Create Room</h2>
+            <p>Start a new room for your group and lock it with a password.</p>
+          </div>
+        </div>
+        <form id="create-form" class="stack">
+          <label>
+            <span>Room Name</span>
+            <input id="create-name" type="text" placeholder="Friday Friend Lobby" required>
+          </label>
+          <label>
+            <span>Room Code</span>
+            <input id="create-code" type="text" placeholder="VICTOR7" minlength="4" maxlength="12" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="create-password" type="password" minlength="8" placeholder="At least 8 characters" required>
+          </label>
+          <div class="actions">
+            <button class="success" type="submit">Create Room</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Open Room</h2>
+            <p>Log back in later with the room code and password.</p>
+          </div>
+        </div>
+        <form id="login-form" class="stack">
+          <label>
+            <span>Room Code</span>
+            <input id="login-code" type="text" placeholder="VICTOR7" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="login-password" type="password" minlength="8" required>
+          </label>
+          <div class="actions">
+            <button class="ghost" type="submit">Open Room</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>How It Works</h2>
+            <p>Quick reminders for hosts.</p>
+          </div>
+        </div>
+        <div class="helper-list">
+          <div class="helper-item">Upload only the DLLs you want players to queue in game. Victor Launcher will stage them for install after the player enters your room code.</div>
+          <div class="helper-item">Room changes are drafts until you press <strong>Save Room Pack</strong>. Uploading alone does not publish the new pack version.</div>
+          <div class="helper-item">If you remove a DLL here, it is removed from the room draft and deleted from room storage too.</div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="panel wide hidden">
+        <div class="panel-head">
+          <div>
+            <h2 id="dashboard-title">Room Dashboard</h2>
+            <p id="dashboard-subtitle">No room loaded.</p>
+          </div>
+          <div class="actions">
+            <button id="copy-room-code" class="ghost" type="button">Copy Room Code</button>
+            <button id="logout-room" class="danger" type="button">Close Room</button>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="meta-grid">
+            <div class="subpanel stack">
+              <h3>Pack Details</h3>
+              <label>
+                <span>Pack Name</span>
+                <input id="pack-name" type="text" placeholder="Victor Pack">
+              </label>
+              <div class="two-col">
+                <label>
+                  <span>Pack Version</span>
+                  <input id="pack-version" type="text" placeholder="1.0.0">
+                </label>
+                <label>
+                  <span>Game Version</span>
+                  <input id="game-version" type="text" placeholder="2026.3.31">
+                </label>
+              </div>
+              <label class="toggle">
+                <input id="download-enabled" type="checkbox" checked>
+                <span>Allow players to download this room pack</span>
+              </label>
+            </div>
+
+            <div class="subpanel stack">
+              <div class="status-card">
+                <h3>Room Status</h3>
+                <div class="status-row">
+                  <span>Room Code</span>
+                  <strong id="room-code-pill">-</strong>
+                </div>
+                <div class="status-row">
+                  <span>Manifest Version</span>
+                  <strong id="manifest-version-pill">1</strong>
+                </div>
+                <div class="status-row">
+                  <span>Publish State</span>
+                  <strong id="publish-state">Enabled</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subpanel stack">
+            <div class="panel-head">
+              <div>
+                <h3>Upload DLLs</h3>
+                <p>These files will appear in Victor Launcher after players enter your room code in game.</p>
+              </div>
+            </div>
+            <label class="file-picker">
+              <span>Select one or more `.dll` files to add to this room pack.</span>
+              <input id="dll-files" type="file" accept=".dll" multiple>
+            </label>
+            <div class="actions">
+              <button id="upload-dlls" class="primary" type="button">Upload DLLs</button>
+              <button id="save-room" class="success" type="button">Save Room Pack</button>
+            </div>
+          </div>
+
+          <div class="subpanel stack">
+            <div class="panel-head">
+              <div>
+                <h3>Files In This Room</h3>
+                <p>Players will queue these DLLs after they enter your room code.</p>
+              </div>
+            </div>
+            <div id="file-list" class="room-list empty">No DLLs uploaded yet.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside id="banner" class="banner hidden" aria-live="polite"></aside>
+
+  <script type="module">
+    const config = {
+      projectUrl: "https://xziwdtzegzasllwnadih.supabase.co",
+      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6aXdkdHplZ3phc2xsd25hZGloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTkyNTYsImV4cCI6MjA5MjE5NTI1Nn0.CRdXnp8f_MIEjD4QXZtr8NTUTCiqtcWCSsnHEEHDJJs"
+    };
+
+    const storageKeys = {
+      session: "victor.room.session"
+    };
+
+    const state = {
+      projectUrl: config.projectUrl,
+      anonKey: config.anonKey,
+      roomCode: "",
+      roomName: "",
+      sessionToken: "",
+      manifestVersion: 1,
+      downloadEnabled: true,
+      manifest: createEmptyManifest()
+    };
+
+    const el = {
+      createForm: document.querySelector("#create-form"),
+      loginForm: document.querySelector("#login-form"),
+      dashboard: document.querySelector("#dashboard"),
+      banner: document.querySelector("#banner"),
+      createName: document.querySelector("#create-name"),
+      createCode: document.querySelector("#create-code"),
+      createPassword: document.querySelector("#create-password"),
+      loginCode: document.querySelector("#login-code"),
+      loginPassword: document.querySelector("#login-password"),
+      dashboardTitle: document.querySelector("#dashboard-title"),
+      dashboardSubtitle: document.querySelector("#dashboard-subtitle"),
+      packName: document.querySelector("#pack-name"),
+      packVersion: document.querySelector("#pack-version"),
+      gameVersion: document.querySelector("#game-version"),
+      downloadEnabled: document.querySelector("#download-enabled"),
+      dllFiles: document.querySelector("#dll-files"),
+      uploadDlls: document.querySelector("#upload-dlls"),
+      saveRoom: document.querySelector("#save-room"),
+      fileList: document.querySelector("#file-list"),
+      roomCodePill: document.querySelector("#room-code-pill"),
+      manifestVersionPill: document.querySelector("#manifest-version-pill"),
+      publishState: document.querySelector("#publish-state"),
+      copyRoomCode: document.querySelector("#copy-room-code"),
+      logoutRoom: document.querySelector("#logout-room")
+    };
+
+    bootstrap();
+
+    function bootstrap() {
+      bindEvents();
+      tryRestoreSession();
+      render();
+    }
+
+    function bindEvents() {
+      el.createForm.addEventListener("submit", createRoom);
+      el.loginForm.addEventListener("submit", openRoom);
+      el.uploadDlls.addEventListener("click", uploadDlls);
+      el.saveRoom.addEventListener("click", saveRoomPack);
+      el.copyRoomCode.addEventListener("click", copyRoomCode);
+      el.logoutRoom.addEventListener("click", closeRoom);
+    }
+
+    async function createRoom(event) {
+      event.preventDefault();
+      try {
+        const payload = await callFunction("room-create", {
+          roomName: el.createName.value.trim(),
+          roomCode: normalizeRoomCode(el.createCode.value),
+          password: el.createPassword.value
+        });
+
+        hydrateRoom(payload.room, payload.sessionToken);
+        persistSession();
+        el.createForm.reset();
+        showBanner(`Room ${state.roomCode} created.`, "success");
+      } catch (error) {
+        showBanner(error.message, "error");
+      }
+    }
+
+    async function openRoom(event) {
+      event.preventDefault();
+      try {
+        const payload = await callFunction("room-login", {
+          roomCode: normalizeRoomCode(el.loginCode.value),
+          password: el.loginPassword.value
+        });
+
+        hydrateRoom(payload.room, payload.sessionToken);
+        persistSession();
+        el.loginForm.reset();
+        showBanner(`Room ${state.roomCode} opened.`, "success");
+      } catch (error) {
+        showBanner(error.message, "error");
+      }
+    }
+
+    async function uploadDlls() {
+      if (!requireRoom()) return;
+
+      const files = Array.from(el.dllFiles.files ?? []);
+      if (!files.length) {
+        showBanner("Pick at least one DLL first.", "error");
+        return;
+      }
+
+      try {
+        for (const file of files) {
+          if (!file.name.toLowerCase().endsWith(".dll")) {
+            throw new Error(`Only DLL files are allowed. ${file.name} was skipped.`);
+          }
+
+          const formData = new FormData();
+          formData.append("file", file);
+          const payload = await callFunction("room-upload", formData, {
+            bearer: state.sessionToken,
+            isFormData: true
+          });
+
+          upsertFile(payload.file);
+        }
+
+        el.dllFiles.value = "";
+        renderFiles();
+        showBanner("DLLs uploaded. Save the room pack to publish this version.", "success");
+      } catch (error) {
+        showBanner(error.message, "error");
+      }
+    }
+
+    async function saveRoomPack() {
+      if (!requireRoom()) return;
+
+      state.manifest.name = el.packName.value.trim() || state.roomName || state.roomCode;
+      state.manifest.version = el.packVersion.value.trim() || "1.0.0";
+      state.manifest.gameVersion = el.gameVersion.value.trim();
+
+      try {
+        const payload = await callFunction("room-save", {
+          roomName: state.manifest.name,
+          downloadEnabled: el.downloadEnabled.checked,
+          manifest: state.manifest
+        }, {
+          bearer: state.sessionToken
+        });
+
+        hydrateRoom(payload.room, state.sessionToken);
+        persistSession();
+        showBanner("Room pack saved.", "success");
+      } catch (error) {
+        showBanner(error.message, "error");
+      }
+    }
+
+    async function copyRoomCode() {
+      if (!state.roomCode) {
+        showBanner("Open a room first.", "error");
+        return;
+      }
+
+      await navigator.clipboard.writeText(state.roomCode);
+      showBanner(`Copied ${state.roomCode}.`, "success");
+    }
+
+    function closeRoom() {
+      state.roomCode = "";
+      state.roomName = "";
+      state.sessionToken = "";
+      state.manifestVersion = 1;
+      state.downloadEnabled = true;
+      state.manifest = createEmptyManifest();
+      localStorage.removeItem(storageKeys.session);
+      render();
+      showBanner("Room session cleared.", "success");
+    }
+
+    function requireRoom() {
+      if (state.roomCode && state.sessionToken) {
+        return true;
+      }
+
+      showBanner("Create or open a room first.", "error");
+      return false;
+    }
+
+    function tryRestoreSession() {
+      const raw = localStorage.getItem(storageKeys.session);
+      if (!raw) return;
+
+      try {
+        const session = JSON.parse(raw);
+        if (!session.roomCode || !session.sessionToken) return;
+        state.roomCode = session.roomCode;
+        state.roomName = session.roomName ?? session.roomCode;
+        state.sessionToken = session.sessionToken;
+        state.manifestVersion = session.manifestVersion ?? 1;
+        state.downloadEnabled = session.downloadEnabled !== false;
+        state.manifest = normalizeManifest(session.manifest, session.roomName);
+      } catch {
+        localStorage.removeItem(storageKeys.session);
+      }
+    }
+
+    function persistSession() {
+      localStorage.setItem(storageKeys.session, JSON.stringify({
+        roomCode: state.roomCode,
+        roomName: state.roomName,
+        sessionToken: state.sessionToken,
+        manifestVersion: state.manifestVersion,
+        downloadEnabled: state.downloadEnabled,
+        manifest: state.manifest
+      }));
+    }
+
+    function hydrateRoom(room, sessionToken) {
+      state.roomCode = String(room?.room_code ?? room?.roomCode ?? "").trim().toUpperCase();
+      state.roomName = String(room?.room_name ?? room?.roomName ?? state.roomCode);
+      state.sessionToken = sessionToken;
+      state.manifestVersion = Number(room?.manifest_version ?? room?.manifestVersion ?? 1);
+      state.downloadEnabled = room?.download_enabled !== false && room?.downloadEnabled !== false;
+      state.manifest = normalizeManifest(room?.manifest, state.roomName);
+      render();
+    }
+
+    function render() {
+      const active = Boolean(state.roomCode && state.sessionToken);
+      el.dashboard.classList.toggle("hidden", !active);
+      if (!active) return;
+
+      el.dashboardTitle.textContent = state.roomName || state.roomCode;
+      el.dashboardSubtitle.textContent = `Share room code ${state.roomCode} with players. Changes here stay attached to this room owner session.`;
+      el.packName.value = state.manifest.name || state.roomName || "";
+      el.packVersion.value = state.manifest.version || "1.0.0";
+      el.gameVersion.value = state.manifest.gameVersion || "";
+      el.downloadEnabled.checked = state.downloadEnabled;
+      el.roomCodePill.textContent = state.roomCode;
+      el.manifestVersionPill.textContent = String(state.manifestVersion);
+      el.publishState.textContent = state.downloadEnabled ? "Enabled" : "Paused";
+      renderFiles();
+    }
+
+    function renderFiles() {
+      const files = state.manifest.files ?? [];
+      if (!files.length) {
+        el.fileList.className = "room-list empty";
+        el.fileList.textContent = "No DLLs uploaded yet.";
+        return;
+      }
+
+      el.fileList.className = "room-list";
+      el.fileList.innerHTML = files.map((file, index) => `
+        <div class="room-file">
+          <div>
+            <h3>${escapeHtml(file.path.split("/").pop() || file.path)}</h3>
+            <div class="mono">${escapeHtml(file.storagePath || "pending storage path")}</div>
+            <div class="mono">sha256 ${escapeHtml(file.sha256 || "")}</div>
+            <div class="code">Size: ${Number(file.sizeBytes || 0).toLocaleString()} bytes</div>
+          </div>
+          <div class="actions">
+            <button type="button" class="danger" data-remove="${index}">Remove</button>
+          </div>
+        </div>
+      `).join("");
+
+      el.fileList.querySelectorAll("[data-remove]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const index = Number(button.getAttribute("data-remove"));
+          const file = state.manifest.files[index];
+          if (!file) return;
+
+          try {
+            await callFunction("room-delete-file", {
+              storagePath: file.storagePath
+            }, {
+              bearer: state.sessionToken
+            });
+          } catch (error) {
+            showBanner(error.message, "error");
+            return;
+          }
+
+          state.manifest.files.splice(index, 1);
+          renderFiles();
+          persistSession();
+          showBanner("DLL removed from this room.", "success");
+        });
+      });
+    }
+
+    function upsertFile(file) {
+      const next = {
+        path: String(file.path ?? ""),
+        storagePath: String(file.storagePath ?? ""),
+        sha256: String(file.sha256 ?? "").toLowerCase(),
+        sizeBytes: Number(file.sizeBytes ?? 0)
+      };
+
+      const index = state.manifest.files.findIndex((entry) => entry.path === next.path);
+      if (index >= 0) {
+        state.manifest.files[index] = next;
+      } else {
+        state.manifest.files.push(next);
+      }
+
+      persistSession();
+    }
+
+    async function callFunction(name, payload, options = {}) {
+      const headers = {
+        apikey: state.anonKey,
+        Authorization: `Bearer ${state.anonKey}`
+      };
+
+      if (options.bearer) {
+        headers["x-room-session"] = options.bearer;
+      }
+
+      if (!options.isFormData) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const response = await fetch(`${state.projectUrl.replace(/\/$/, "")}/functions/v1/${name}`, {
+        method: "POST",
+        headers,
+        body: options.isFormData ? payload : JSON.stringify(payload)
+      });
+
+      const text = await response.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { error: text || `${name} failed.` };
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `${name} failed.`);
+      }
+
+      return data;
+    }
+
+    function normalizeRoomCode(value) {
+      return value.trim().toUpperCase();
+    }
+
+    function createEmptyManifest() {
+      return {
+        id: "",
+        name: "",
+        version: "1.0.0",
+        gameVersion: "",
+        loader: "BepInEx",
+        dependencies: [],
+        conflicts: [],
+        files: []
+      };
+    }
+
+    function normalizeManifest(manifest, fallbackName = "") {
+      const files = Array.isArray(manifest?.files) ? manifest.files.map((file) => ({
+        path: String(file.path ?? ""),
+        storagePath: String(file.storagePath ?? ""),
+        sha256: String(file.sha256 ?? "").toLowerCase(),
+        sizeBytes: Number(file.sizeBytes ?? 0)
+      })) : [];
+
+      return {
+        ...createEmptyManifest(),
+        ...manifest,
+        name: manifest?.name || fallbackName || "",
+        loader: "BepInEx",
+        files
+      };
+    }
+
+    function showBanner(message, type = "success") {
+      el.banner.textContent = message;
+      el.banner.className = `banner ${type}`;
+      window.clearTimeout(showBanner.timerId);
+      showBanner.timerId = window.setTimeout(() => {
+        el.banner.className = "banner hidden";
+      }, 4200);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>
