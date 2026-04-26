@@ -97,16 +97,7 @@ internal sealed class ModFileService
         Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
         BackupIfPresent(destinationPath, _pluginDirectory);
 
-        try
-        {
-            File.Move(sourcePath, destinationPath, overwrite: true);
-        }
-        catch (IOException)
-        {
-            // Fall back to copy+delete if the platform refuses the move.
-            File.Copy(sourcePath, destinationPath, overwrite: true);
-            File.Delete(sourcePath);
-        }
+        MoveFileWithFallback(sourcePath, destinationPath);
 
         PersistStateSnapshot();
         return ModActionResult.Success($"{fileName} installed from mod-imports. Restart the game to load it.");
@@ -124,7 +115,7 @@ internal sealed class ModFileService
             return ModActionResult.Fail("That queued folder no longer exists.");
         }
 
-        var files = Directory.EnumerateFiles(sourceDirectory, "*.dll", SearchOption.AllDirectories).ToArray();
+        var files = EnumerateGroupDlls(_importDirectory, safeGroupKey).ToArray();
         if (files.Length == 0)
         {
             return ModActionResult.Fail("That queued folder does not contain any DLLs.");
@@ -137,15 +128,7 @@ internal sealed class ModFileService
             Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
             BackupIfPresent(destinationPath, _pluginDirectory);
 
-            try
-            {
-                File.Move(file, destinationPath, overwrite: true);
-            }
-            catch (IOException)
-            {
-                File.Copy(file, destinationPath, overwrite: true);
-                File.Delete(file);
-            }
+            MoveFileWithFallback(file, destinationPath);
         }
 
         DeleteEmptyParents(sourceDirectory, _importDirectory);
@@ -248,7 +231,7 @@ internal sealed class ModFileService
 
         Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
         BackupIfPresent(destinationPath, destinationRoot);
-        File.Move(fullPath, destinationPath, overwrite: true);
+        MoveFileWithFallback(fullPath, destinationPath);
         PersistStateSnapshot();
         return ModActionResult.Success($"{Path.GetFileName(fullPath)} {verb}. Restart the game to apply the change.");
     }
@@ -265,7 +248,7 @@ internal sealed class ModFileService
             return ModActionResult.Fail("That mod folder no longer exists.");
         }
 
-        var files = Directory.EnumerateFiles(sourceDirectory, "*.dll", SearchOption.AllDirectories)
+        var files = EnumerateGroupDlls(sourceRoot, safeGroupKey)
             .Where(path => !IsSelf(path))
             .ToArray();
 
@@ -280,7 +263,7 @@ internal sealed class ModFileService
             var destinationPath = Path.Combine(destinationRoot, relativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
             BackupIfPresent(destinationPath, destinationRoot);
-            File.Move(file, destinationPath, overwrite: true);
+            MoveFileWithFallback(file, destinationPath);
         }
 
         DeleteEmptyParents(sourceDirectory, sourceRoot);
@@ -301,6 +284,19 @@ internal sealed class ModFileService
         var backupPath = Path.Combine(backupRoot, relativePath);
         Directory.CreateDirectory(Path.GetDirectoryName(backupPath)!);
         File.Copy(destinationPath, backupPath, overwrite: true);
+    }
+
+    private static void MoveFileWithFallback(string sourcePath, string destinationPath)
+    {
+        try
+        {
+            File.Move(sourcePath, destinationPath, overwrite: true);
+        }
+        catch (IOException)
+        {
+            File.Copy(sourcePath, destinationPath, overwrite: true);
+            File.Delete(sourcePath);
+        }
     }
 
     private void PersistStateSnapshot()
@@ -370,6 +366,35 @@ internal sealed class ModFileService
         }
 
         foreach (var file in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories))
+        {
+            yield return file;
+        }
+    }
+
+    private static IEnumerable<string> EnumerateGroupDlls(string root, string groupKey)
+    {
+        if (!Directory.Exists(root))
+        {
+            yield break;
+        }
+
+        if (string.IsNullOrWhiteSpace(groupKey))
+        {
+            foreach (var file in Directory.EnumerateFiles(root, "*.dll", SearchOption.TopDirectoryOnly))
+            {
+                yield return file;
+            }
+
+            yield break;
+        }
+
+        var groupDirectory = Path.Combine(root, groupKey);
+        if (!Directory.Exists(groupDirectory))
+        {
+            yield break;
+        }
+
+        foreach (var file in Directory.EnumerateFiles(groupDirectory, "*.dll", SearchOption.AllDirectories))
         {
             yield return file;
         }

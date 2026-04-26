@@ -50,19 +50,25 @@ internal sealed class SupabasePackService
             return ModActionResult.Fail(parseResult.ErrorMessage);
         }
 
-        var envelope = parseResult.Envelope!;
+        var envelope = parseResult.Envelope;
+        if (envelope?.Manifest == null)
+        {
+            return ModActionResult.Fail("The room manifest was missing its file list.");
+        }
+
+        var manifest = envelope.Manifest;
         if (!IsEnvelopeFresh(envelope))
         {
             return ModActionResult.Fail("The room manifest has expired. Try again in a moment.");
         }
 
-        if (envelope.Manifest.Files.Count == 0)
+        if (manifest.Files.Count == 0)
         {
             return ModActionResult.Fail("That room pack does not contain any files yet.");
         }
 
         var downloadedCount = 0;
-        foreach (var file in envelope.Manifest.Files)
+        foreach (var file in manifest.Files)
         {
             var validationError = ValidateManifestFile(file, projectUrl);
             if (validationError != null)
@@ -101,7 +107,7 @@ internal sealed class SupabasePackService
             downloadedCount++;
         }
 
-        var packName = string.IsNullOrWhiteSpace(envelope.RoomName) ? envelope.Manifest.Name : envelope.RoomName;
+        var packName = string.IsNullOrWhiteSpace(envelope.RoomName) ? manifest.Name : envelope.RoomName;
         return ModActionResult.Success($"{packName} queued {downloadedCount} DLL {(downloadedCount == 1 ? "download" : "downloads")}. Install them from the queue when you're ready.");
     }
 

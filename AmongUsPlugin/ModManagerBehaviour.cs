@@ -639,8 +639,14 @@ public sealed class ModManagerBehaviour : MonoBehaviour
         _lastActionSucceeded = result.Succeeded;
         _statusMessage = result.Message;
 
-        if (!promptForRestart)
+        if (!result.Succeeded || !promptForRestart)
         {
+            if (!result.Succeeded)
+            {
+                _restartPromptVisible = false;
+                _restartPromptReason = "";
+            }
+
             return;
         }
 
@@ -890,7 +896,7 @@ public sealed class ModManagerBehaviour : MonoBehaviour
             return;
         }
 
-        if (_editableRoomCode.Length >= 20)
+        if (_editableRoomCode.Length >= 12)
         {
             currentEvent.Use();
             return;
